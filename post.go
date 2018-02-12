@@ -66,7 +66,6 @@ func codeToUrl(code string) string {
 // Given code of post, return information of the post with login status.
 func (m *IGApiManager) GetPostInfo(code string) (sm ShortcodeMedia, err error) {
 	url := codeToUrl(code)
-	fmt.Println(url) // to be deleted
 	b, err := getHTTPResponse(url, m.dsUserId, m.sessionid, m.csrftoken)
 
 	pi := PostInfo{}

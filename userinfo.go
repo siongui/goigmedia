@@ -50,6 +50,9 @@ type MediaNode struct {
 func GetUserInfoNoLogin(username string) (ui UserInfo, err error) {
 	url := strings.Replace(urlUserInfo, "{{USERNAME}}", username, 1)
 	b, err := getHTTPResponseNoLogin(url)
+	if err != nil {
+		return
+	}
 
 	r := RawUserResp{}
 	if err = json.Unmarshal(b, &r); err != nil {
@@ -59,16 +62,47 @@ func GetUserInfoNoLogin(username string) (ui UserInfo, err error) {
 	return
 }
 
-// Given user name, return information of the user name with login status.
+// Given user name, return information of the user name.
 func (m *IGApiManager) GetUserInfo(username string) (ui UserInfo, err error) {
 	url := strings.Replace(urlUserInfo, "{{USERNAME}}", username, 1)
 	b, err := getHTTPResponse(url, m.dsUserId, m.sessionid, m.csrftoken)
+	if err != nil {
+		return
+	}
 
 	r := RawUserResp{}
 	if err = json.Unmarshal(b, &r); err != nil {
 		return
 	}
 	ui = r.User
+	return
+}
+
+// Given user name, return codes of all posts of the user.
+func (m *IGApiManager) GetAllPostCode(username string) (codes []string, err error) {
+	ui, err := m.GetUserInfo(username)
+	if err != nil {
+		return
+	}
+	for _, node := range ui.Media.Nodes {
+		codes = append(codes, node.Code)
+	}
+	for ui.Media.PageInfo.HasNextPage == true {
+		url := strings.Replace(urlUserInfo, "{{USERNAME}}", username, 1)
+		url = url + "&max_id=" + ui.Media.PageInfo.EndCursor
+		b, err := getHTTPResponse(url, m.dsUserId, m.sessionid, m.csrftoken)
+		if err != nil {
+			return codes, err
+		}
+		r := RawUserResp{}
+		if err = json.Unmarshal(b, &r); err != nil {
+			return codes, err
+		}
+		ui = r.User
+		for _, node := range ui.Media.Nodes {
+			codes = append(codes, node.Code)
+		}
+	}
 	return
 }
 
