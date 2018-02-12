@@ -10,19 +10,40 @@ import (
 	"strings"
 )
 
-// no need to login or cookie to access this URL
+// no need to login or cookie to access this URL. But if login to Instagram,
+// private account will return private data if you are allowed to view the
+// private account.
 const UrlUserInfo = `https://www.instagram.com/{{USERNAME}}/?__a=1`
 
 // used to decode the JSON data
 type RawUserResp struct {
-	User UserInfo
+	User UserInfo `json:"user"`
 }
 
 // You can add more fields in the struct to get more information
 // See response/types.go in github.com/ahmdrz/goinsta
 type UserInfo struct {
-	Id        string `json:"id"`
-	Biography string `json:"biography"`
+	Biography       string `json:"biography"`
+	ExternalUrl     string `json:"external_url"`
+	FullName        string `json:"full_name"`
+	Id              string `json:"id"`
+	IsPrivate       bool   `json:"is_private"`
+	ProfilePicUrlHd string `json:"profile_pic_url_hd"`
+	Username        string `json:"username"`
+	Media           struct {
+		Nodes    []MediaNode `json:"nodes"`
+		Count    int64       `json:"count"`
+		PageInfo struct {
+			HasNextPage bool   `json:"has_next_page"`
+			EndCursor   string `json:"end_cursor"`
+		} `json:"page_info"`
+	} `json:"media"`
+}
+
+type MediaNode struct {
+	Code    string `json:"code"` // url of the post
+	Date    int64  `json:"date"`
+	Caption string `json:"caption"`
 }
 
 // Given user name, return information of the user name without login.

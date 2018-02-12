@@ -16,5 +16,5 @@ func TestIGApiManager(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	t.Log(ui)
+	JsonPrettyPrint(ui)
 }
