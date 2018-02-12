@@ -39,6 +39,20 @@ func GetUserInfoNoLogin(username string) (ui UserInfo, err error) {
 	return
 }
 
+// Given user name, return information of the user name with login status.
+// Currently only id and biography is returned.
+func (m *IGApiManager) GetUserInfo(username string) (ui UserInfo, err error) {
+	url := strings.Replace(UrlUserInfo, "{{USERNAME}}", username, 1)
+	b, err := getHTTPResponse(url, m.dsUserId, m.sessionid, m.csrftoken)
+
+	r := RawUserResp{}
+	if err = json.Unmarshal(b, &r); err != nil {
+		return
+	}
+	ui = r.User
+	return
+}
+
 // Given user name, return id of the user name.
 func GetUserId(username string) (id string, err error) {
 	ui, err := GetUserInfoNoLogin(username)
