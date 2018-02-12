@@ -34,27 +34,28 @@ type EdgeMedia struct {
 	TakenAtTimestamp int64  `json:"taken_at_timestamp"`
 }
 
-func getBestResolutionImageUrl(pi PostInfo) string {
-	res := pi.GraphQL.ShortcodeMedia.DisplayResources
+// return URL of image with best resolution
+func (em *EdgeMedia) getImageUrl() string {
+	res := em.DisplayResources
 	return res[len(res)-1].Src
 }
 
-func getVideoUrl(pi PostInfo) string {
-	return pi.GraphQL.ShortcodeMedia.VideoUrl
+func (em *EdgeMedia) getVideoUrl() string {
+	return em.VideoUrl
 }
 
-func printMeaningfulData(pi PostInfo) {
-	switch pi.GraphQL.ShortcodeMedia.Typename {
+func printMeaningfulData(sm ShortcodeMedia) {
+	switch sm.Typename {
 	case "GraphImage":
-		fmt.Println(getBestResolutionImageUrl(pi))
+		fmt.Println(sm.getImageUrl())
 	case "GraphVideo":
-		fmt.Println(getVideoUrl(pi))
+		fmt.Println(sm.getVideoUrl())
 	case "GraphSidecar":
 		fmt.Println("")
 	default:
-		panic(pi.GraphQL.ShortcodeMedia.Typename)
+		panic(sm.Typename)
 	}
-	printTimestamp(pi.GraphQL.ShortcodeMedia.TakenAtTimestamp)
+	printTimestamp(sm.TakenAtTimestamp)
 }
 
 // Given the code of the post, return url of the post.
@@ -63,11 +64,16 @@ func codeToUrl(code string) string {
 }
 
 // Given code of post, return information of the post with login status.
-func (m *IGApiManager) GetPostInfo(code string) (pi PostInfo, err error) {
+func (m *IGApiManager) GetPostInfo(code string) (sm ShortcodeMedia, err error) {
 	url := codeToUrl(code)
 	fmt.Println(url) // to be deleted
 	b, err := getHTTPResponse(url, m.dsUserId, m.sessionid, m.csrftoken)
 
+	pi := PostInfo{}
 	err = json.Unmarshal(b, &pi)
+	if err != nil {
+		return
+	}
+	sm = pi.GraphQL.ShortcodeMedia
 	return
 }

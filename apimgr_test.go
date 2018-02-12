@@ -17,12 +17,12 @@ func TestIGApiManager(t *testing.T) {
 		return
 	}
 	for _, node := range ui.Media.Nodes {
-		pi, err := mgr.GetPostInfo(node.Code)
+		sm, err := mgr.GetPostInfo(node.Code)
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		//JsonPrettyPrint(pi)
-		printMeaningfulData(pi)
+		//JsonPrettyPrint(sm)
+		printMeaningfulData(sm)
 	}
 }
