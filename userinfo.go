@@ -13,7 +13,7 @@ import (
 // no need to login or cookie to access this URL. But if login to Instagram,
 // private account will return private data if you are allowed to view the
 // private account.
-const UrlUserInfo = `https://www.instagram.com/{{USERNAME}}/?__a=1`
+const urlUserInfo = `https://www.instagram.com/{{USERNAME}}/?__a=1`
 
 // used to decode the JSON data
 type RawUserResp struct {
@@ -47,9 +47,8 @@ type MediaNode struct {
 }
 
 // Given user name, return information of the user name without login.
-// Currently only id and biography is returned.
 func GetUserInfoNoLogin(username string) (ui UserInfo, err error) {
-	url := strings.Replace(UrlUserInfo, "{{USERNAME}}", username, 1)
+	url := strings.Replace(urlUserInfo, "{{USERNAME}}", username, 1)
 	b, err := getHTTPResponseNoLogin(url)
 
 	r := RawUserResp{}
@@ -61,9 +60,8 @@ func GetUserInfoNoLogin(username string) (ui UserInfo, err error) {
 }
 
 // Given user name, return information of the user name with login status.
-// Currently only id and biography is returned.
 func (m *IGApiManager) GetUserInfo(username string) (ui UserInfo, err error) {
-	url := strings.Replace(UrlUserInfo, "{{USERNAME}}", username, 1)
+	url := strings.Replace(urlUserInfo, "{{USERNAME}}", username, 1)
 	b, err := getHTTPResponse(url, m.dsUserId, m.sessionid, m.csrftoken)
 
 	r := RawUserResp{}

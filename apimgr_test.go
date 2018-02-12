@@ -16,5 +16,13 @@ func TestIGApiManager(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	JsonPrettyPrint(ui)
+	for _, node := range ui.Media.Nodes {
+		pi, err := mgr.GetPostInfo(node.Code)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		//JsonPrettyPrint(pi)
+		printTimestamp(pi.GraphQL.ShortcodeMedia.TakenAtTimestamp)
+	}
 }
