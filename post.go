@@ -14,7 +14,27 @@ type PostInfo struct {
 }
 
 type ShortcodeMedia struct {
+	EdgeMedia
+	EdgeSidecarToChildren struct {
+		Edges []struct {
+			Nodes EdgeMedia `json:"node"`
+		} `json:"edges"`
+	} `json:"edge_sidecar_to_children"`
+}
+
+type EdgeMedia struct {
+	Typename         string `json:"__typename"`
+	DisplayResources []struct {
+		Src          string `json:"src"`
+		ConfigWidth  int64  `json:"config_width"`
+		ConfigHeight int64  `json:"config_height"`
+	} `json:"display_resources"`
 	TakenAtTimestamp int64 `json:"taken_at_timestamp"`
+}
+
+func getBestResolutionUrl(pi PostInfo) string {
+	res := pi.GraphQL.ShortcodeMedia.DisplayResources
+	return res[len(res)-1].Src
 }
 
 // Given the code of the post, return url of the post.
