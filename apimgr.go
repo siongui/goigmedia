@@ -1,3 +1,5 @@
+// Package igmedia helps you get all URLs of posts of a specific Instagram user,
+// and also media (photos and videos) links of posts.
 package igmedia
 
 type IGApiManager struct {

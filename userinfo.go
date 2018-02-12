@@ -1,9 +1,4 @@
-// Package goiguserid returns id of Instagram user given the user name.
 package igmedia
-
-// Get Instagram user information, such as id and biography, via username.
-// See ``Instagram API -Get the userId - Stack Overflow``
-// https://stackoverflow.com/a/44773079
 
 import (
 	"encoding/json"
@@ -84,9 +79,12 @@ func (m *IGApiManager) GetAllPostCode(username string) (codes []string, err erro
 	if err != nil {
 		return
 	}
+
 	for _, node := range ui.Media.Nodes {
 		codes = append(codes, node.Code)
 	}
+	printPostCount(len(codes), "")
+
 	for ui.Media.PageInfo.HasNextPage == true {
 		url := strings.Replace(urlUserInfo, "{{USERNAME}}", username, 1)
 		url = url + "&max_id=" + ui.Media.PageInfo.EndCursor
@@ -102,6 +100,7 @@ func (m *IGApiManager) GetAllPostCode(username string) (codes []string, err erro
 		for _, node := range ui.Media.Nodes {
 			codes = append(codes, node.Code)
 		}
+		printPostCount(len(codes), url)
 	}
 	return
 }

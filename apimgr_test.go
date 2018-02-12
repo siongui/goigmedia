@@ -11,13 +11,13 @@ func TestIGApiManager(t *testing.T) {
 		os.Getenv("IG_SESSIONID"),
 		os.Getenv("IG_CSRFTOKEN"))
 
-	ui, err := mgr.GetUserInfo(os.Getenv("IG_TEST_USERNAME"))
+	codes, err := mgr.GetAllPostCode(os.Getenv("IG_TEST_USERNAME"))
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	for _, node := range ui.Media.Nodes {
-		sm, err := mgr.GetPostInfo(node.Code)
+	for _, code := range codes {
+		sm, err := mgr.GetPostInfo(code)
 		if err != nil {
 			t.Error(err)
 			return
@@ -25,4 +25,5 @@ func TestIGApiManager(t *testing.T) {
 		//JsonPrettyPrint(sm)
 		printMeaningfulData(sm)
 	}
+	t.Log(len(codes))
 }
