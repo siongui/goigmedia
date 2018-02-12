@@ -2,6 +2,7 @@ package igmedia
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -29,12 +30,31 @@ type EdgeMedia struct {
 		ConfigWidth  int64  `json:"config_width"`
 		ConfigHeight int64  `json:"config_height"`
 	} `json:"display_resources"`
-	TakenAtTimestamp int64 `json:"taken_at_timestamp"`
+	VideoUrl         string `json:"video_url"`
+	TakenAtTimestamp int64  `json:"taken_at_timestamp"`
 }
 
-func getBestResolutionUrl(pi PostInfo) string {
+func getBestResolutionImageUrl(pi PostInfo) string {
 	res := pi.GraphQL.ShortcodeMedia.DisplayResources
 	return res[len(res)-1].Src
+}
+
+func getVideoUrl(pi PostInfo) string {
+	return pi.GraphQL.ShortcodeMedia.VideoUrl
+}
+
+func printMeaningfulData(pi PostInfo) {
+	switch pi.GraphQL.ShortcodeMedia.Typename {
+	case "GraphImage":
+		fmt.Println(getBestResolutionImageUrl(pi))
+	case "GraphVideo":
+		fmt.Println(getVideoUrl(pi))
+	case "GraphSidecar":
+		fmt.Println("")
+	default:
+		panic(pi.GraphQL.ShortcodeMedia.Typename)
+	}
+	printTimestamp(pi.GraphQL.ShortcodeMedia.TakenAtTimestamp)
 }
 
 // Given the code of the post, return url of the post.
@@ -45,6 +65,7 @@ func codeToUrl(code string) string {
 // Given code of post, return information of the post with login status.
 func (m *IGApiManager) GetPostInfo(code string) (pi PostInfo, err error) {
 	url := codeToUrl(code)
+	fmt.Println(url) // to be deleted
 	b, err := getHTTPResponse(url, m.dsUserId, m.sessionid, m.csrftoken)
 
 	err = json.Unmarshal(b, &pi)

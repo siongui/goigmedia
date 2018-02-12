@@ -22,6 +22,7 @@ func TestIGApiManager(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		JsonPrettyPrint(pi)
+		//JsonPrettyPrint(pi)
+		printMeaningfulData(pi)
 	}
 }
