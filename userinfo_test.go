@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-func ExampleGetUserInfo() {
-	user, err := GetUserInfo("instagram")
+func ExampleGetUserInfoNoLogin() {
+	user, err := GetUserInfoNoLogin("instagram")
 	if err != nil {
 		panic(err)
 	}

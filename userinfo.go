@@ -7,7 +7,6 @@ package igmedia
 
 import (
 	"encoding/json"
-	"net/http"
 	"strings"
 )
 
@@ -26,19 +25,14 @@ type UserInfo struct {
 	Biography string `json:"biography"`
 }
 
-// Given user name, return information of the user name.
+// Given user name, return information of the user name without login.
 // Currently only id and biography is returned.
-func GetUserInfo(username string) (ui UserInfo, err error) {
+func GetUserInfoNoLogin(username string) (ui UserInfo, err error) {
 	url := strings.Replace(UrlUserInfo, "{{USERNAME}}", username, 1)
-	resp, err := http.Get(url)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
+	b, err := getHTTPResponseNoLogin(url)
 
-	dec := json.NewDecoder(resp.Body)
 	r := RawUserResp{}
-	if err = dec.Decode(&r); err != nil {
+	if err = json.Unmarshal(b, &r); err != nil {
 		return
 	}
 	ui = r.User
@@ -47,7 +41,7 @@ func GetUserInfo(username string) (ui UserInfo, err error) {
 
 // Given user name, return id of the user name.
 func GetUserId(username string) (id string, err error) {
-	ui, err := GetUserInfo(username)
+	ui, err := GetUserInfoNoLogin(username)
 	if err != nil {
 		return
 	}
