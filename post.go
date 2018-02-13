@@ -15,14 +15,27 @@ type postInfo struct {
 }
 
 type EdgeMedia struct {
-	Typename         string `json:"__typename"`
+	Typename   string `json:"__typename"`
+	Shortcode  string `json:"shortcode"`
+	Dimensions struct {
+		Height int64 `json:"height"`
+		Width  int64 `json:"width"`
+	} `json:"dimensions"`
+	DisplayUrl       string `json:"display_url"`
 	DisplayResources []struct {
 		Src          string `json:"src"`
 		ConfigWidth  int64  `json:"config_width"`
 		ConfigHeight int64  `json:"config_height"`
 	} `json:"display_resources"`
-	VideoUrl              string `json:"video_url"`
-	TakenAtTimestamp      int64  `json:"taken_at_timestamp"`
+	VideoUrl         string `json:"video_url"`
+	IsVideo          bool   `json:"is_video"`
+	TakenAtTimestamp int64  `json:"taken_at_timestamp"`
+	Location         struct {
+		Id            string `json:"id"`
+		HasPublicPage bool   `json:"has_public_page"`
+		Name          string `json:"name"`
+		Slug          string `json:"slug"`
+	} `json:"location"`
 	EdgeSidecarToChildren struct {
 		Edges []struct {
 			Nodes EdgeMedia `json:"node"`
