@@ -38,7 +38,7 @@ type EdgeMedia struct {
 	} `json:"location"`
 	EdgeSidecarToChildren struct {
 		Edges []struct {
-			Nodes EdgeMedia `json:"node"`
+			Node EdgeMedia `json:"node"`
 		} `json:"edges"`
 	} `json:"edge_sidecar_to_children"`
 }
@@ -53,7 +53,26 @@ func (em *EdgeMedia) getVideoUrl() string {
 	return em.VideoUrl
 }
 
-func printMeaningfulData(em EdgeMedia) {
+func (em *EdgeMedia) printEdgeMediaChildInfo() {
+	indentation := "   "
+	fmt.Println(indentation + em.Typename)
+
+	switch em.Typename {
+	case "GraphImage":
+		fmt.Println(indentation + em.getImageUrl())
+	case "GraphVideo":
+		fmt.Println(indentation + em.getVideoUrl())
+	default:
+		panic(em.Typename)
+	}
+	fmt.Println("")
+}
+
+func (em *EdgeMedia) printEdgeMediaInfo() {
+	fmt.Println(em.Typename)
+	fmt.Println(stripQueryString(codeToUrl(em.Shortcode)))
+
+	// print media (photos and videos) links
 	switch em.Typename {
 	case "GraphImage":
 		fmt.Println(em.getImageUrl())
@@ -61,10 +80,15 @@ func printMeaningfulData(em EdgeMedia) {
 		fmt.Println(em.getVideoUrl())
 	case "GraphSidecar":
 		fmt.Println("")
+		for _, edge := range em.EdgeSidecarToChildren.Edges {
+			edge.Node.printEdgeMediaChildInfo()
+		}
 	default:
 		panic(em.Typename)
 	}
+
 	printTimestamp(em.TakenAtTimestamp)
+	fmt.Println("")
 }
 
 // Given the code of the post, return url of the post.

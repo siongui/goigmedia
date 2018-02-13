@@ -3,6 +3,7 @@ package igmedia
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -27,4 +28,14 @@ func formatTimestamp(timestamp int64) string {
 func printPostCount(c int, url string) {
 	url = strings.Replace(url, "__a=1&", "", 1)
 	fmt.Printf("Getting %d from %s ...\n", c, url)
+}
+
+// Remove query string in the URL
+func stripQueryString(inputUrl string) string {
+	u, err := url.Parse(inputUrl)
+	if err != nil {
+		panic(err)
+	}
+	u.RawQuery = ""
+	return u.String()
 }

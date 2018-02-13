@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestGetPostInfo(t *testing.T) {
+func ExampleGetPostInfo(t *testing.T) {
 	mgr := NewInstagramApiManager(
 		os.Getenv("IG_DS_USER_ID"),
 		os.Getenv("IG_SESSIONID"),
@@ -15,6 +15,6 @@ func TestGetPostInfo(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	jsonPrettyPrint(em)
-	//printMeaningfulData(em)
+	//jsonPrettyPrint(em)
+	em.printEdgeMediaInfo()
 }
