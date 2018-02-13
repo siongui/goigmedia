@@ -74,6 +74,8 @@ func (m *IGApiManager) GetUserInfo(username string) (ui UserInfo, err error) {
 }
 
 // Given user name, return codes of all posts of the user.
+// TODO: add sleep at the end of forloop. If the number of posts is over 2400,
+// Instagram API will return http response code 429 (Too Many Requests)
 func (m *IGApiManager) GetAllPostCode(username string) (codes []string, err error) {
 	r := RawUserResp{}
 	r.User.Media.PageInfo.HasNextPage = true
