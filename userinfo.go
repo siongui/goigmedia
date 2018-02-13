@@ -15,8 +15,6 @@ type rawUserResp struct {
 	User UserInfo `json:"user"`
 }
 
-// You can add more fields in the struct to get more information
-// See response/types.go in github.com/ahmdrz/goinsta
 type UserInfo struct {
 	Biography       string `json:"biography"`
 	ExternalUrl     string `json:"external_url"`
@@ -26,19 +24,17 @@ type UserInfo struct {
 	ProfilePicUrlHd string `json:"profile_pic_url_hd"`
 	Username        string `json:"username"`
 	Media           struct {
-		Nodes    []MediaNode `json:"nodes"`
-		Count    int64       `json:"count"`
+		Nodes []struct {
+			Code    string `json:"code"` // url of the post
+			Date    int64  `json:"date"`
+			Caption string `json:"caption"`
+		} `json:"nodes"`
+		Count    int64 `json:"count"`
 		PageInfo struct {
 			HasNextPage bool   `json:"has_next_page"`
 			EndCursor   string `json:"end_cursor"`
 		} `json:"page_info"`
 	} `json:"media"`
-}
-
-type MediaNode struct {
-	Code    string `json:"code"` // url of the post
-	Date    int64  `json:"date"`
-	Caption string `json:"caption"`
 }
 
 // Given user name, return information of the user name without login.
