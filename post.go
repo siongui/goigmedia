@@ -10,17 +10,8 @@ const urlPost = `https://www.instagram.com/p/{{CODE}}/?__a=1`
 
 type postInfo struct {
 	GraphQL struct {
-		ShortcodeMedia ShortcodeMedia `json:"shortcode_media"`
+		ShortcodeMedia EdgeMedia `json:"shortcode_media"`
 	} `json:"graphql"`
-}
-
-type ShortcodeMedia struct {
-	EdgeMedia
-	EdgeSidecarToChildren struct {
-		Edges []struct {
-			Nodes EdgeMedia `json:"node"`
-		} `json:"edges"`
-	} `json:"edge_sidecar_to_children"`
 }
 
 type EdgeMedia struct {
@@ -30,8 +21,13 @@ type EdgeMedia struct {
 		ConfigWidth  int64  `json:"config_width"`
 		ConfigHeight int64  `json:"config_height"`
 	} `json:"display_resources"`
-	VideoUrl         string `json:"video_url"`
-	TakenAtTimestamp int64  `json:"taken_at_timestamp"`
+	VideoUrl              string `json:"video_url"`
+	TakenAtTimestamp      int64  `json:"taken_at_timestamp"`
+	EdgeSidecarToChildren struct {
+		Edges []struct {
+			Nodes EdgeMedia `json:"node"`
+		} `json:"edges"`
+	} `json:"edge_sidecar_to_children"`
 }
 
 // return URL of image with best resolution
@@ -44,18 +40,18 @@ func (em *EdgeMedia) getVideoUrl() string {
 	return em.VideoUrl
 }
 
-func printMeaningfulData(sm ShortcodeMedia) {
-	switch sm.Typename {
+func printMeaningfulData(em EdgeMedia) {
+	switch em.Typename {
 	case "GraphImage":
-		fmt.Println(sm.getImageUrl())
+		fmt.Println(em.getImageUrl())
 	case "GraphVideo":
-		fmt.Println(sm.getVideoUrl())
+		fmt.Println(em.getVideoUrl())
 	case "GraphSidecar":
 		fmt.Println("")
 	default:
-		panic(sm.Typename)
+		panic(em.Typename)
 	}
-	printTimestamp(sm.TakenAtTimestamp)
+	printTimestamp(em.TakenAtTimestamp)
 }
 
 // Given the code of the post, return url of the post.
@@ -64,15 +60,18 @@ func codeToUrl(code string) string {
 }
 
 // Given code of post, return information of the post with login status.
-func (m *IGApiManager) GetPostInfo(code string) (sm ShortcodeMedia, err error) {
+func (m *IGApiManager) GetPostInfo(code string) (em EdgeMedia, err error) {
 	url := codeToUrl(code)
 	b, err := getHTTPResponse(url, m.dsUserId, m.sessionid, m.csrftoken)
+	if err != nil {
+		return
+	}
 
 	pi := postInfo{}
 	err = json.Unmarshal(b, &pi)
 	if err != nil {
 		return
 	}
-	sm = pi.GraphQL.ShortcodeMedia
+	em = pi.GraphQL.ShortcodeMedia
 	return
 }

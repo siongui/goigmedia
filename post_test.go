@@ -10,11 +10,11 @@ func TestGetPostInfo(t *testing.T) {
 		os.Getenv("IG_DS_USER_ID"),
 		os.Getenv("IG_SESSIONID"),
 		os.Getenv("IG_CSRFTOKEN"))
-	sm, err := mgr.GetPostInfo(os.Getenv("IG_TEST_CODE"))
+	em, err := mgr.GetPostInfo(os.Getenv("IG_TEST_CODE"))
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	jsonPrettyPrint(sm)
-	printMeaningfulData(sm)
+	jsonPrettyPrint(em)
+	//printMeaningfulData(em)
 }
