@@ -75,29 +75,24 @@ func (m *IGApiManager) GetUserInfo(username string) (ui UserInfo, err error) {
 
 // Given user name, return codes of all posts of the user.
 func (m *IGApiManager) GetAllPostCode(username string) (codes []string, err error) {
-	ui, err := m.GetUserInfo(username)
-	if err != nil {
-		return
-	}
-
-	for _, node := range ui.Media.Nodes {
-		codes = append(codes, node.Code)
-	}
-	printPostCount(len(codes), "")
-
-	for ui.Media.PageInfo.HasNextPage == true {
+	r := RawUserResp{}
+	r.User.Media.PageInfo.HasNextPage = true
+	for r.User.Media.PageInfo.HasNextPage == true {
 		url := strings.Replace(urlUserInfo, "{{USERNAME}}", username, 1)
-		url = url + "&max_id=" + ui.Media.PageInfo.EndCursor
+		if len(codes) != 0 {
+			url = url + "&max_id=" + r.User.Media.PageInfo.EndCursor
+		}
+
 		b, err := getHTTPResponse(url, m.dsUserId, m.sessionid, m.csrftoken)
 		if err != nil {
 			return codes, err
 		}
-		r := RawUserResp{}
+
 		if err = json.Unmarshal(b, &r); err != nil {
 			return codes, err
 		}
-		ui = r.User
-		for _, node := range ui.Media.Nodes {
+
+		for _, node := range r.User.Media.Nodes {
 			codes = append(codes, node.Code)
 		}
 		printPostCount(len(codes), url)
