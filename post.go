@@ -8,7 +8,7 @@ import (
 
 const urlPost = `https://www.instagram.com/p/{{CODE}}/?__a=1`
 
-type PostInfo struct {
+type postInfo struct {
 	GraphQL struct {
 		ShortcodeMedia ShortcodeMedia `json:"shortcode_media"`
 	} `json:"graphql"`
@@ -68,7 +68,7 @@ func (m *IGApiManager) GetPostInfo(code string) (sm ShortcodeMedia, err error) {
 	url := codeToUrl(code)
 	b, err := getHTTPResponse(url, m.dsUserId, m.sessionid, m.csrftoken)
 
-	pi := PostInfo{}
+	pi := postInfo{}
 	err = json.Unmarshal(b, &pi)
 	if err != nil {
 		return

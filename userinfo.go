@@ -11,7 +11,7 @@ import (
 const urlUserInfo = `https://www.instagram.com/{{USERNAME}}/?__a=1`
 
 // used to decode the JSON data
-type RawUserResp struct {
+type rawUserResp struct {
 	User UserInfo `json:"user"`
 }
 
@@ -49,7 +49,7 @@ func GetUserInfoNoLogin(username string) (ui UserInfo, err error) {
 		return
 	}
 
-	r := RawUserResp{}
+	r := rawUserResp{}
 	if err = json.Unmarshal(b, &r); err != nil {
 		return
 	}
@@ -65,7 +65,7 @@ func (m *IGApiManager) GetUserInfo(username string) (ui UserInfo, err error) {
 		return
 	}
 
-	r := RawUserResp{}
+	r := rawUserResp{}
 	if err = json.Unmarshal(b, &r); err != nil {
 		return
 	}
@@ -77,7 +77,7 @@ func (m *IGApiManager) GetUserInfo(username string) (ui UserInfo, err error) {
 // TODO: add sleep at the end of forloop. If the number of posts is over 2400,
 // Instagram API will return http response code 429 (Too Many Requests)
 func (m *IGApiManager) GetAllPostCode(username string) (codes []string, err error) {
-	r := RawUserResp{}
+	r := rawUserResp{}
 	r.User.Media.PageInfo.HasNextPage = true
 	for r.User.Media.PageInfo.HasNextPage == true {
 		url := strings.Replace(urlUserInfo, "{{USERNAME}}", username, 1)

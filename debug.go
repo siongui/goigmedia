@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func JsonPrettyPrint(v interface{}) {
+func jsonPrettyPrint(v interface{}) {
 	b, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		panic(err)
